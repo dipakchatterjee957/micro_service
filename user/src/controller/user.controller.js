@@ -13,5 +13,35 @@ export default new class Usercontroller {
         }
     };
 
+    createUser = async (req, res) => {
+    try {
+      const data = await userService.createUser(req);
+      return utils.sendResponse(res, data, true);
+    } catch (error) {
+      console.error(error);
+      return utils.sendResponse(res, null, false, error.message);
+    }
+  };
+
+  updateUser = async (req, res) => {
+    try {
+      const data = await userService.updateUser(req);
+      return utils.sendResponse(res, data, true);
+    } catch (error) {
+      console.error(error);
+      return utils.sendResponse(res, null, false, error.message);
+    }
+  };
+
+  deleteUser = async (req, res) => {
+    try {
+      const data = await userService.deleteUser(req);
+      return utils.sendResponse(res, data, true);
+    } catch (error) {
+      console.error(error);
+      return utils.sendResponse(res, null, false, error.message);
+    }
+  };
+
    
 }

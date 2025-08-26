@@ -36,4 +36,45 @@ export default new class Userservice {
             throw error;
         }
     }
+
+    async createUser(req) {
+        try {
+            const user = await User.create(req.body);
+            return user;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Update user
+    async updateUser(req) {
+        try {
+            const { user_master_id } = req.params;
+            const [updated] = await User.update(req.body, {
+                where: { user_master_id }
+            });
+
+            if (updated) {
+                return await User.findByPk(user_master_id); // return updated user
+            }
+            throw new Error("User not found");
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Delete user
+    async deleteUser(req) {
+        try {
+            const { user_master_id } = req.params;
+            const deleted = await User.destroy({
+                where: { user_master_id }
+            });
+
+            if (!deleted) throw new Error("User not found");
+            return { message: "User deleted successfully" };
+        } catch (error) {
+            throw error;
+        }
+    }
 };
