@@ -26,7 +26,7 @@ const start = async () => {
         console.log("Database connected successfully");
 
         // If you want Sequelize to create/update tables automatically:
-        // await sequelize.sync({ alter: true });
+        await sequelize.sync({ alter: true });
 
         app.listen(PORT, () => {
             console.log(`User Server is running on http://localhost:${PORT}`);
