@@ -11,10 +11,10 @@ const User = sequelize.define("User", {
     type: DataTypes.INTEGER,
     allowNull: true,
   },
-  user_designation_master_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
+  // user_designation_master_id: {
+  //   type: DataTypes.INTEGER,
+  //   allowNull: false,
+  // },
   user_name: {
     type: DataTypes.STRING(100),
     allowNull: false,

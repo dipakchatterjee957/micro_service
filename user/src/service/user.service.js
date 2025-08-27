@@ -1,6 +1,8 @@
 import userQuery from "../query/user.query.js";
 import connection from "../utils/mysql.controller.js";
+import sequelize from "../utils/sequelize.js";
 import User from "../models/User.js";
+import UserRoleMap from "../models/UserRoleMap.js";
 
 export default new class Userservice {
 
@@ -19,7 +21,7 @@ export default new class Userservice {
         try {
             const users = await User.findAll({
                 where: { active_flag: "A" }, // filtering like your old query   
-        });
+            });
             return users;
         } catch (error) {
             throw error;
@@ -49,10 +51,28 @@ export default new class Userservice {
     }
 
     async createUser(req) {
+        const t = await sequelize.transaction(); // start transaction
         try {
-            const user = await User.create(req.body);
-            return user;
+            // 1. Create User
+            const { user_role_master_id, ...userData } = req.body;
+
+            const user = await User.create(userData, { transaction: t });
+
+            // 2. Insert mapping into user_role_map
+            await UserRoleMap.create({
+                user_master_id: user.user_master_id,
+                user_role_master_id: user_role_master_id,
+                created_by: userData.created_by
+            }, { transaction: t });
+
+            // 3. Commit transaction
+            await t.commit();
+
+            return user; // return newly created user
+
         } catch (error) {
+            // Rollback if anything fails
+            await t.rollback();
             throw error;
         }
     }
