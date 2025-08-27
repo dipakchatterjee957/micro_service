@@ -15,7 +15,18 @@ export default new class Userservice {
     //     }
     // };
 
-    async getUserList(req) {
+    async getUserAllList(req) {
+        try {
+            const users = await User.findAll({
+                where: { active_flag: "A" }, // filtering like your old query   
+        });
+            return users;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async getUserListByBranch(req) {
         try {
             const { branch_master_id } = req.params;
 

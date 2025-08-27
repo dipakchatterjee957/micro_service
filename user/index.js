@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import userRouter from './src/router/user.router.js';
-import sequelize from './src/utils/sequelize.js';   
+import { sequelize } from "./src/models/index.js";  
 
 dotenv.config();
 const PORT = process.env.PORT;

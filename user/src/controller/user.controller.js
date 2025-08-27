@@ -3,9 +3,19 @@ import utils from '../utils/utils.js';
 
 export default new class Usercontroller {
 
-    getUserList = async (req, res) => {
+    getUserAllList = async (req, res) => {
         try {
-            const data = await userService.getUserList(req);
+            const data = await userService.getUserAllList(req);
+            return utils.sendResponse(res, data, true);
+        } catch (error) {
+            console.error(error);
+            return utils.sendResponse(res, null, false);
+        }
+    };
+
+    getUserListByBranch = async (req, res) => {
+        try {
+            const data = await userService.getUserListByBranch(req);
             return utils.sendResponse(res, data, true);
         } catch (error) {
             console.error(error);
