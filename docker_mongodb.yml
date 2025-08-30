@@ -1,0 +1,31 @@
+services:
+  # MongoDB Service
+  mongodb:
+    image: mongo:4.4
+    container_name: mongo_invoice_db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root # root username
+      MONGO_INITDB_ROOT_PASSWORD: 1234 # root password
+      MONGO_INITDB_DATABASE: invoice_db # auto-create database
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db # persistent storage
+
+  mongoclient:
+    image: mongo-express:1.0
+    container_name: mongo_express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 1234
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+volumes:
+  mongo_data:
