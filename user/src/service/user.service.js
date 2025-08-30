@@ -3,6 +3,7 @@ import connection from "../utils/mysql.controller.js";
 import sequelize from "../utils/sequelize.js";
 import User from "../models/User.js";
 import UserRoleMap from "../models/UserRoleMap.js";
+import UserRoleMaster from "../models/UserRoleMaster.js";
 
 export default new class Userservice {
 
@@ -20,7 +21,15 @@ export default new class Userservice {
     async getUserAllList(req) {
         try {
             const users = await User.findAll({
-                where: { active_flag: "A" }, // filtering like your old query   
+                where: { active_flag: "A" },
+                include: [
+                    {
+                        model: UserRoleMaster,
+                        as: "role_details",
+                        through: { attributes: [] }, // hide join table data
+                        attributes: ["user_role_master_id", "role_code", "role_description"] // pick only required fields
+                    }
+                ]
             });
             return users;
         } catch (error) {
@@ -34,17 +43,37 @@ export default new class Userservice {
 
             const users = await User.findAll({
                 where: { branch_master_id, active_flag: "A" }, // filtering like your old query
+                include: [
+                    {
+                        model: UserRoleMaster,
+                        as: "role_details",
+                        attributes: ["user_role_master_id", "role_code", "role_description"],
+                        through: { attributes: [] }
+                    }
+                ],
                 attributes: [
                     "user_master_id",
                     "user_name",
-                    "email_primary",
+                    "login_id",
                     "mobile_primary",
-                    "job_status",
                     "active_flag"
-                ]
+                ],
+                raw: true,   // 👈 makes it flat
+                nest: false  // 👈 prevents nesting under role_details
             });
 
-            return users;
+            const formatted = users.map(user => ({
+                user_master_id: user.user_master_id,
+                user_name: user.user_name,
+                login_id: user.login_id,
+                mobile_primary: user.mobile_primary,
+                active_flag: user.active_flag,
+                user_role_master_id: user["role_details.user_role_master_id"],   // 👈 flatten
+                role_code: user["role_details.role_code"],
+                role_description: user["role_details.role_description"]
+            }));
+
+            return formatted;
         } catch (error) {
             throw error;
         }

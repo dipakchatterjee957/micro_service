@@ -1,12 +1,13 @@
 import sequelize from "../utils/sequelize.js";
 import User from "./User.js";
-import UserRoleMaster from "./userRoleMaster.js";
+import UserRoleMaster from "./UserRoleMaster.js";
 import UserRoleMap from "./UserRoleMap.js";
 
 // Associations
 User.belongsToMany(UserRoleMaster, {
   through: UserRoleMap,
-  foreignKey: "user_master_id"
+  foreignKey: "user_master_id",
+  as: "role_details"
 });
 
 UserRoleMaster.belongsToMany(User, {
