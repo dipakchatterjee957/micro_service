@@ -10,6 +10,16 @@ export default new class InvoiceService {
     }
   }
 
+  async getInvoiceById(req) {
+    try {
+      const { id } = req.params;
+      const invoice = await Invoice.findById(id);
+      return invoice;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async createInvoice(req) {
     try {
       const { amount, details, created_by } = req.body;
@@ -23,4 +33,30 @@ export default new class InvoiceService {
       throw error;
     }
   }
+
+  async updateInvoiceById(req) {
+    try {
+      const { id } = req.params;  
+      const { amount, details } = req.body;
+      const updatedInvoice = await Invoice.findByIdAndUpdate(
+        id,
+        { amount, details },
+        { new: true } // return the updated document
+      );
+      return updatedInvoice;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteInvoiceById(req) {
+    try {
+      const { id } = req.params;
+      const deletedInvoice = await Invoice.findByIdAndDelete(id);
+      return deletedInvoice;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 };
