@@ -22,10 +22,11 @@ export default new class InvoiceService {
 
   async createInvoice(req) {
     try {
-      const { amount, details, created_by } = req.body;
+      const { amount, details, amount_divided_users, created_by } = req.body;
       const newInvoice = new Invoice({
         amount,
         details,
+        amount_divided_users,
         created_by,
       });
       return await newInvoice.save();
