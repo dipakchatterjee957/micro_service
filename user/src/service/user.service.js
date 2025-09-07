@@ -4,6 +4,8 @@ import sequelize from "../utils/sequelize.js";
 import User from "../models/User.js";
 import UserRoleMap from "../models/UserRoleMap.js";
 import UserRoleMaster from "../models/UserRoleMaster.js";
+import bcrypt from "bcryptjs";
+import amqp from "amqplib";
 
 export default new class Userservice {
 
@@ -84,6 +86,9 @@ export default new class Userservice {
         try {
             // 1. Create User
             const { user_role_master_id, ...userData } = req.body;
+            const hashsalt = bcrypt.genSaltSync(10);
+            userData.password = bcrypt.hashSync(userData.password, hashsalt);
+
 
             const user = await User.create(userData, { transaction: t });
 
@@ -137,4 +142,74 @@ export default new class Userservice {
             throw error;
         }
     }
+
+
+
+    async login(req) {
+        try {
+            const { login_id, ...userData } = req.body;
+            const users = await User.findOne({
+                where: { login_id, active_flag: "A" },
+                include: [
+                    {
+                        model: UserRoleMaster,
+                        as: "role_details",
+                        attributes: ["user_role_master_id", "role_code", "role_description"],
+                        through: { attributes: [] }
+                    }
+                ],
+                attributes: [
+                    "user_master_id",
+                    "user_name",
+                    "login_id",
+                    "mobile_primary",
+                    "password",
+                    "active_flag"
+                ],
+                raw: true,
+                nest: false
+            });
+
+            if (!users) {
+                throw new Error("User not found");
+            }
+
+            const passwordMatch = await bcrypt.compare(userData.password, users.password);
+
+            if (passwordMatch) {
+                // Publish to RabbitMQ
+                await this.publishLoginEvent(users);
+                return users;
+            } else {
+                throw new Error("Password mismatch");
+            }
+        } catch (error) {
+            // 🔑 Preserve actual error message
+            throw new Error(error.message || "Login failed");
+        }
+    }
+
+    async publishLoginEvent(user) {
+        try {
+            const connection = await amqp.connect("amqp://guest:guest@localhost:5672");
+            const channel = await connection.createChannel();
+            const queue = "user_login_events";
+
+            await channel.assertQueue(queue, { durable: true });
+
+            const message = JSON.stringify({
+                userId: user.user_master_id,
+                loginId: user.login_id,
+                loginTime: new Date(),
+                time: new Date().toISOString()
+            });
+
+            channel.sendToQueue(queue, Buffer.from(message), { persistent: true });
+            console.log("✅ Sent to RabbitMQ:", message);
+        } catch (err) {
+            console.error("RabbitMQ Publish Error:", err.message);
+        }
+    }
+
+
 };

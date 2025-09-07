@@ -1,5 +1,5 @@
 services:
-  # MySQL Service
+  # MySQL DB For User Service
   mysql:
     image: mysql:8.0
     container_name: mysql_user_db
@@ -14,5 +14,35 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql # persistent storage
 
+  # MongoDB For Invoive Service
+  mongodb:
+    image: mongo:4.4
+    container_name: mongo_invoice_db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root # root username
+      MONGO_INITDB_ROOT_PASSWORD: 1234 # root password
+      MONGO_INITDB_DATABASE: invoice_db # auto-create database
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db # persistent storage
+
+  # RabbitMQ Broker
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_broker
+    restart: always
+    ports:
+      - "5672:5672" # AMQP protocol
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq # persist broker data
+
 volumes:
   mysql_data:
+  mongo_data:
+  rabbitmq_data:

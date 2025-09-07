@@ -7,5 +7,6 @@ userRouter.get(`/getUserListByBranch/:branch_master_id`, userController.getUserL
 userRouter.post(`/createUser`, userController.createUser);
 userRouter.put(`/updateUser/:user_master_id`, userController.updateUser);
 userRouter.delete(`/deleteUser/:user_master_id`, userController.deleteUser);
+userRouter.post(`/login`, userController.login);
 
 export default userRouter;
