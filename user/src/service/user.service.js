@@ -191,9 +191,9 @@ export default new class Userservice {
 
     async publishLoginEvent(user) {
         try {
-            const connection = await amqp.connect("amqp://guest:guest@localhost:5672");
+            const connection = await amqp.connect("amqp://guest:guest@localhost:5672"); //"amqp://guest:guest@rabbitmq:5672"
             const channel = await connection.createChannel();
-            const queue = "user_login_events";
+            const queue = "user_login_event";
 
             await channel.assertQueue(queue, { durable: true });
 
