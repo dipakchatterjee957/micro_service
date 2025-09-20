@@ -2,6 +2,9 @@ import express from 'express';
 import dotenv from 'dotenv';
 import amqp from "amqplib";
 import nodemailer from 'nodemailer';
+import ejs from 'ejs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 dotenv.config();
 
 
@@ -19,15 +22,20 @@ const transporter = nodemailer.createTransport({
 
 // Function to send email
 async function sendInvoiceEmail(invoice) {
+  // Render the EJS template to HTML
+ const templatePath = fileURLToPath(new URL('./views/invoiceEmail.ejs', import.meta.url));
+  const html = await ejs.renderFile(templatePath, { invoice });
+
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: process.env.TO_EMAIL, // could be invoice.created_by email if available
-    subject: `New Invoice Created: ${invoice._id}`,
-    text: `Invoice Details:\nAmount: ${invoice.amount}\nDetails: ${invoice.details}`,
+    subject: `New Invoice Created: ${invoice.invoice_number}`,
+    // text: `Invoice Details:\nAmount: ${invoice.amount}\nDetails: ${invoice.details}`,
+    html
   };
 
   await transporter.sendMail(mailOptions);
-  console.log('Email sent for invoice', invoice._id);
+  console.log('Email sent for invoice', invoice.invoice_number);
 }
 
 async function startConsumer() {
