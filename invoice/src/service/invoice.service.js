@@ -1,4 +1,5 @@
 import Invoice from "../models/invoice.model.js";
+import amqp from "amqplib";
 
 export default new class InvoiceService {
   async getInvoiceListAll(req) {
@@ -29,9 +30,26 @@ export default new class InvoiceService {
         amount_divided_users,
         created_by,
       });
-      return await newInvoice.save();
+      const savedInvoice = await newInvoice.save();
+      await this.piblishInvoiceCreate(savedInvoice); // publish message to RabbitMQ
+      return savedInvoice;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async piblishInvoiceCreate(invoice) {
+    try{
+      const connection = await amqp.connect("amqp://guest:guest@localhost:5672");
+      const channel = await connection.createChannel();
+      const queue = "invoice_created_queue";
+
+      await channel.assertQueue(queue, {durable: true});
+      const invoiceData = JSON.stringify(invoice);
+      channel.sendToQueue(queue,Buffer.from(invoiceData),{persistent:true});
+      console.log("Invoice creation message sent to queue");
+    }catch(error){
+      console.error("Failed to publish invoice creation message:", error);
     }
   }
 
