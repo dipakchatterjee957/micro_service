@@ -23,12 +23,13 @@ export default new class InvoiceService {
 
   async createInvoice(req) {
     try {
-      const { amount, details, amount_divided_users, created_by } = req.body;
+      const { amount, details, amount_divided_users, created_by,customer_email } = req.body;
       const newInvoice = new Invoice({
         amount,
         details,
         amount_divided_users,
         created_by,
+        customer_email
       });
       const savedInvoice = await newInvoice.save();
       await this.piblishInvoiceCreate(savedInvoice); // publish message to RabbitMQ

@@ -28,7 +28,7 @@ async function sendInvoiceEmail(invoice) {
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: process.env.TO_EMAIL, // could be invoice.created_by email if available
+    to: invoice.customer_email, // could be invoice.created_by email if available
     subject: `New Invoice Created: ${invoice.invoice_number}`,
     // text: `Invoice Details:\nAmount: ${invoice.amount}\nDetails: ${invoice.details}`,
     html

@@ -8,6 +8,7 @@ const InvoiceSchema = new mongoose.Schema({
   amount_divided_users: { type: Array, default: [] },
   created_by: { type: Number, required: true },
   created_on: { type: Date, default: Date.now }, // auto timestamp
+  customer_email: { type: String, required: false },
 });
 
 // Auto Increment
