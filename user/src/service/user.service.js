@@ -6,6 +6,9 @@ import UserRoleMap from "../models/UserRoleMap.js";
 import UserRoleMaster from "../models/UserRoleMaster.js";
 import bcrypt from "bcryptjs";
 import amqp from "amqplib";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 export default new class Userservice {
 
@@ -178,6 +181,7 @@ export default new class Userservice {
 
             if (passwordMatch) {
                 // Publish to RabbitMQ
+                users.access_token = jwt.sign(users, process.env.SECRET_KEY, { expiresIn: '12h' });
                 await this.publishLoginEvent(users);
                 return users;
             } else {
