@@ -181,6 +181,7 @@ export default new class Userservice {
 
             if (passwordMatch) {
                 // Publish to RabbitMQ
+                console.log(users, 'user details in user service');
                 users.access_token = jwt.sign(users, process.env.SECRET_KEY, { expiresIn: '12h' });
                 await this.publishLoginEvent(users);
                 return users;
