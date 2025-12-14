@@ -44,6 +44,7 @@ export default new class Userservice {
 
     async getUserListByBranch(req) {
         try {
+            console.log(req.params)
             const { branch_master_id } = req.params;
 
             const users = await User.findAll({
