@@ -10,6 +10,6 @@ RUN npm install --global nodemon
 
 COPY . .
 
-EXPOSE 6061
+EXPOSE 6064
 
 CMD ["npm", "start"]
