@@ -1,0 +1,23 @@
+CREATE TABLE `user_master` (
+  `user_master_id` int NOT NULL AUTO_INCREMENT,
+  `branch_master_id` int DEFAULT NULL,
+  `user_designation_master_id` int NOT NULL,
+  `user_name` varchar(100) NOT NULL,
+  `login_id` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `password` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'c7ed284280357f70dc3e9bc39d5f3305',
+  `salt` varchar(100) NOT NULL DEFAULT 'd4df3595-2984-453c-9f44-f11673108bdc',
+  `mobile_primary` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `mobile_secondary` char(10) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `email_primary` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `email_secondary` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL,
+  `job_status` enum('PR','LT','W') DEFAULT 'PR',
+  `active_flag` enum('A','D') CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'A',
+  `created_by` int NOT NULL,
+  `created_on` datetime NOT NULL,
+  `updated_by` int DEFAULT NULL,
+  `updated_on` datetime DEFAULT NULL,
+  `deleted_by` int DEFAULT NULL,
+  `deleted_on` datetime DEFAULT NULL,
+  PRIMARY KEY (`user_master_id`),
+  KEY `um_active_flag` (`active_flag`)
+) ;

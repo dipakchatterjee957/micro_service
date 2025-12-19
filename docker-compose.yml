@@ -17,7 +17,8 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p1234"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
     networks:
       - microservices-network
 
@@ -38,7 +39,8 @@ services:
       test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
     networks:
       - microservices-network
 
@@ -55,11 +57,12 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    # healthcheck:
+    #   test: ["CMD-SHELL", "rabbitmqctl status || exit 1"]
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 10
+    #   start_period: 60s
     networks:
       - microservices-network
 
@@ -72,9 +75,9 @@ services:
     restart: always
     ports:
       - "6060:6060"
-    volumes:
-      - ./gateway:/usr/src/app
-      - /usr/src/app/node_modules
+    # volumes:
+    #   - ./gateway:/usr/src/app
+    #   - /usr/src/app/node_modules
     environment:
       - ENV=dev
       - PORT=6060
@@ -102,13 +105,13 @@ services:
     restart: always
     ports:
       - "6061:6061"
-    volumes:
-      - ./user:/usr/src/app
-      - /usr/src/app/node_modules
+    # volumes:
+    #   - ./user:/usr/src/app
+    #   - /usr/src/app/node_modules
     environment:
       - ENV=dev
       - PORT=6061
-      - DATABASE_URL=mysql://root:1234@mysql:3306/user_db
+      - DATABASE_URL=mysql://myuser:1234@mysql:3306/user_db
       - SECRET_KEY=supersecret123
     depends_on:
       mysql:
@@ -125,9 +128,9 @@ services:
     restart: always
     ports:
       - "6062:6062"
-    volumes:
-      - ./invoice:/usr/src/app
-      - /usr/src/app/node_modules
+    # volumes:
+    #   - ./invoice:/usr/src/app
+    #   - /usr/src/app/node_modules
     environment:
       - ENV=dev
       - PORT=6062
@@ -138,7 +141,7 @@ services:
     networks:
       - microservices-network
 
-  # Audit Service
+  # # Audit Service
   audit:
     build:
       context: ./audit
@@ -147,23 +150,23 @@ services:
     restart: always
     ports:
       - "6063:6063"
-    volumes:
-      - ./audit:/usr/src/app
-      - /usr/src/app/node_modules
+    # volumes:
+    #   - ./audit:/usr/src/app
+    #   - /usr/src/app/node_modules
     environment:
       - ENV=dev
       - PORT=6063
       - DATABASE_URL=mongodb://root:1234@mongodb:27017/audit_db?authSource=admin
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     depends_on:
-      rabbitmq:
-        condition: service_healthy
+      # rabbitmq:
+      #   condition: service_healthy
       mongodb:
         condition: service_healthy
     networks:
       - microservices-network
 
-  # Notification Service
+  # # Notification Service
   notification:
     build:
       context: ./notification
@@ -172,18 +175,18 @@ services:
     restart: always
     ports:
       - "6064:6064"
-    volumes:
-      - ./notification:/usr/src/app
-      - /usr/src/app/node_modules
+    # volumes:
+    #   - ./notification:/usr/src/app
+    #   - /usr/src/app/node_modules
     environment:
       - ENV=dev
       - PORT=6064
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - EMAIL_USER=dipakchatterjee956@gmail.com
       - EMAIL_PASS=orxc cgky ajaq clel
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
+    # depends_on:
+    #   rabbitmq:
+    #     condition: service_healthy
     networks:
       - microservices-network
 

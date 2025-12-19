@@ -7,7 +7,7 @@ dotenv.config();
 const router = express.Router();
 
 // user service base URL (change according to your setup)
-const USER_SERVICE_BASE_URL = "http://localhost:6061/dev/user";
+const USER_SERVICE_BASE_URL = "http://user:6061/dev/user";
 
 // LOGIN API through gateway
 router.post("/login", async (req, res) => {
@@ -21,6 +21,7 @@ router.post("/login", async (req, res) => {
     // send response back to client
     return res.status(response.status).json(response.data);
   } catch (error) {
+    console.log(error)
     console.error("Error calling User Service Login:", error.message);
     if (error.response) {
       // Error returned from user service
