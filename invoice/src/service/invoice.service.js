@@ -41,7 +41,7 @@ export default new class InvoiceService {
 
   async piblishInvoiceCreate(invoice) {
     try{
-      const connection = await amqp.connect("amqp://guest:guest@localhost:5672");
+      const connection = await amqp.connect("amqp://guest:guest@rabbitmq:5672");
       const channel = await connection.createChannel();
       const queue = "invoice_created_queue";
 

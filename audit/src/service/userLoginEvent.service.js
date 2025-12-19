@@ -2,7 +2,7 @@ import amqp from "amqplib";
 import UserLoginEvent from "../model/userLoginEvent.model.js";
 
 async function startUserLoginConsumer() {
-  const rabbitUrl = process.env.RABBITMQ_URL || 'amqp://guest:guest@localhost:5672';
+  const rabbitUrl = process.env.RABBITMQ_URL || 'amqp://guest:guest@rabbitmq:5672';
   const queue = 'user_login_event';
 
   try {

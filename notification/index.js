@@ -39,7 +39,7 @@ async function sendInvoiceEmail(invoice) {
 }
 
 async function startConsumer() {
-  const rabbitUrl = process.env.RABBITMQ_URL || 'amqp://guest:guest@localhost:5672';
+  const rabbitUrl = process.env.RABBITMQ_URL || 'amqp://guest:guest@rabbitmq:5672';
   const queue = 'invoice_created_queue';
 
   try{

@@ -57,12 +57,12 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-    # healthcheck:
-    #   test: ["CMD-SHELL", "rabbitmqctl status || exit 1"]
-    #   interval: 10s
-    #   timeout: 10s
-    #   retries: 10
-    #   start_period: 60s
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 400s
     networks:
       - microservices-network
 
@@ -159,8 +159,8 @@ services:
       - DATABASE_URL=mongodb://root:1234@mongodb:27017/audit_db?authSource=admin
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
     depends_on:
-      # rabbitmq:
-      #   condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
       mongodb:
         condition: service_healthy
     networks:
@@ -184,9 +184,9 @@ services:
       - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
       - EMAIL_USER=dipakchatterjee956@gmail.com
       - EMAIL_PASS=orxc cgky ajaq clel
-    # depends_on:
-    #   rabbitmq:
-    #     condition: service_healthy
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     networks:
       - microservices-network
 
